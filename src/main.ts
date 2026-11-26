@@ -366,3 +366,4 @@ lastDrop = performance.now();
 animationFrame = requestAnimationFrame(render);
 
 window.addEventListener('pagehide', () => cancelAnimationFrame(animationFrame));
+export { createBoard, createPiece, rotate, collision };
