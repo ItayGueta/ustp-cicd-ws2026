@@ -6,10 +6,7 @@ on:
   pull_request:
     branches: [main]
   workflow_call:
-  workflow_dispatch: 
-
-permissions:
-  contents: read
+  workflow_dispatch:
 
 jobs:
   build:
@@ -20,15 +17,45 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '22.16.0'
 
       - name: Install dependencies
         run: npm install
 
-      - name: Build application
+      - name: Build
         run: npm run build
-      - uses: actions/upload-artifact@v4
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
         with:
           name: web-app
           path: dist/
-          if-no-files-found: error
+
+  test:
+    needs: build
+
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.os }}
+          path: test-results.xml
