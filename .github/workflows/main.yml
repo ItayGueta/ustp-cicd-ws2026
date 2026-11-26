@@ -27,3 +27,8 @@ jobs:
 
       - name: Build application
         run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web-app
+          path: dist/
+          if-no-files-found: error
